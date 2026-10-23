@@ -16,6 +16,8 @@ permissions:
 
 jobs:
   release:
+    # Keep releases on the stable branch (or an explicit v* tag), never on dev.
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4

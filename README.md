@@ -70,12 +70,17 @@ dotnet run --project scripts/caption-tracker-tests/CaptionTrackerTests.csproj
 powershell -ExecutionPolicy Bypass -File scripts/overlay-tests/run-tests.ps1
 ```
 
-## 发布
+## 分支与发布
 
-GitHub Actions 支持两种触发方式：
+- `main`：只保留可发布代码，默认分支。
+- `dev`：日常开发分支；先在 `dev` 提交并跑 CI，准备发布时再合并到 `main`。
+- Release 只在 `main` 或 `v*` 标签上运行；从 `dev` 手动触发会被跳过。
 
-- 在 Actions → Release 中手动运行，输入版本（从 `1.0.0` 开始）。
-- 推送 `v1.0.0` 形式的标签。
+发布步骤：
+
+1. 在 `dev` 完成开发和测试，推送后等 CI 通过。
+2. 合并 `dev` → `main`，再次确认 `main` 的 CI 通过。
+3. Actions → Release → Run workflow，输入新版本（例如 `1.0.1`）；或推送 `v1.0.1` 标签。
 
 工作流会运行文本回归、生成自包含便携 ZIP、生成按用户安装包，并创建对应的 GitHub Release。版本号从 **1.0.0** 开始。
 
