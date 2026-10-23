@@ -1,4 +1,4 @@
-#define MyAppName "LiveSub"
+﻿#define MyAppName "LiveSub"
 #ifndef MyAppVersion
   #define MyAppVersion "1.0.0"
 #endif
@@ -29,7 +29,7 @@ UninstallDisplayIcon={app}\{#MyAppExeName}
 Compression=lzma2
 SolidCompression=yes
 WizardStyle=modern
-ArchitecturesAllowed=x64
+ArchitecturesAllowed=x64compatible
 MinVersion=10.0.19041
 CloseApplications=yes
 RestartApplications=no
@@ -37,10 +37,10 @@ UsePreviousAppDir=yes
 SetupLogging=yes
 
 [Languages]
-Name: "english"; MessagesFile: "compiler:Default.isl"
+Name: "chinesesimplified"; MessagesFile: "ChineseSimplified.isl"
 
 [Tasks]
-Name: "desktopicon"; Description: "Create a desktop shortcut"; GroupDescription: "Additional tasks:"; Flags: unchecked
+Name: "desktopicon"; Description: "创建桌面快捷方式"; GroupDescription: "附加任务："; Flags: unchecked
 
 [Files]
 Source: "..\publish\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
@@ -50,4 +50,4 @@ Name: "{autoprograms}\LiveSub"; Filename: "{app}\{#MyAppExeName}"
 Name: "{autodesktop}\LiveSub"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
 
 [Run]
-Filename: "{app}\{#MyAppExeName}"; Description: "Launch LiveSub"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\{#MyAppExeName}"; Description: "启动 LiveSub"; Flags: nowait postinstall skipifsilent

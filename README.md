@@ -20,7 +20,7 @@ Windows 本地系统音频字幕：捕获浏览器或任意应用的声音，用
 从 [Releases](https://github.com/Jwforever/livesub/releases) 下载：
 
 - `LiveSub-<version>-win-x64.zip`：便携版。解压后运行 `LiveSub.exe`，不需要安装，也不需要管理员权限。
-- `LiveSub-<version>-setup.exe`：按用户安装（默认 `%LOCALAPPDATA%\Programs\LiveSub`），创建开始菜单快捷方式，可从“应用和功能”卸载。
+- `LiveSub-<version>-setup.exe`：中文安装向导，按用户安装（默认 `%LOCALAPPDATA%\Programs\LiveSub`），创建开始菜单快捷方式，可从“应用和功能”卸载。
 
 模型不随安装包分发。首次使用时在应用内下载，默认保存到 `%LOCALAPPDATA%\LiveSub\models`，大约需要 2 GB 磁盘空间。安装包未做代码签名，Windows SmartScreen 可能提示“未知发布者”；便携版同样可用。
 
