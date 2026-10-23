@@ -1,0 +1,96 @@
+<UserControl x:Class="LiveSub.TitleBar"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
+             x:Name="Root"
+             Height="44"
+             Background="#0B0D12">
+    <UserControl.Resources>
+        <Style x:Key="ChromeButton" TargetType="Button">
+            <Setter Property="Width" Value="46"/>
+            <Setter Property="Height" Value="44"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#B9C2CC"/>
+            <Setter Property="Focusable" Value="False"/>
+            <Setter Property="IsTabStop" Value="False"/>
+            <Setter Property="Cursor" Value="Arrow"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#1AFFFFFF"/>
+                                <Setter Property="Foreground" Value="#FFFFFF"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#10FFFFFF"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="CloseChromeButton" TargetType="Button" BasedOn="{StaticResource ChromeButton}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#C42B1C"/>
+                                <Setter Property="Foreground" Value="#FFFFFF"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#A5251A"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="18,0,0,0">
+            <Image Width="18" Height="18" Source="Assets/livesub.png" RenderOptions.BitmapScalingMode="HighQuality" SnapsToDevicePixels="True"/>
+            <TextBlock x:Name="TitleText"
+                       Text="{Binding Title, ElementName=Root}"
+                       Margin="10,0,0,0"
+                       FontSize="12"
+                       Foreground="#AEB9C6"
+                       VerticalAlignment="Center"/>
+        </StackPanel>
+
+        <StackPanel Grid.Column="1" Orientation="Horizontal">
+            <Button x:Name="MinButton" Style="{StaticResource ChromeButton}"
+                    shell:WindowChrome.IsHitTestVisibleInChrome="True" Click="Minimize_Click" ToolTip="最小化">
+                <Path Data="M 0,0 L 10,0"
+                      Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                      StrokeThickness="1.1" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+            </Button>
+            <Button x:Name="MaxButton" Style="{StaticResource ChromeButton}"
+                    shell:WindowChrome.IsHitTestVisibleInChrome="True" Click="Maximize_Click" ToolTip="最大化">
+                <Path x:Name="MaxIcon" Data="M 0.5,0.5 L 9.5,0.5 9.5,9.5 0.5,9.5 Z"
+                      Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                      StrokeThickness="1" StrokeLineJoin="Miter"/>
+            </Button>
+            <Button x:Name="CloseButton" Style="{StaticResource CloseChromeButton}"
+                    shell:WindowChrome.IsHitTestVisibleInChrome="True" Click="Close_Click" ToolTip="关闭">
+                <Path Data="M 0,0 L 10,10 M 10,0 L 0,10"
+                      Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                      StrokeThickness="1.1" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+            </Button>
+        </StackPanel>
+
+        <Border Grid.ColumnSpan="2" Height="1" VerticalAlignment="Bottom" Background="#14FFFFFF"/>
+    </Grid>
+</UserControl>

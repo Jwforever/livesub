@@ -1,0 +1,42 @@
+<Window x:Class="LiveSub.OverlayWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="LiveSub Overlay"
+        Width="460" Height="150"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        Topmost="True"
+        ShowInTaskbar="False"
+        ShowActivated="False"
+        Focusable="False"
+        ResizeMode="NoResize"
+        Foreground="#FFFFFFFF"
+        UseLayoutRounding="True"
+        WindowStartupLocation="Manual">
+    <Border x:Name="Panel"
+            Margin="12"
+            Padding="14,8,14,7"
+            CornerRadius="24"
+            Background="#DB0A0D13"
+            BorderBrush="#30FFFFFF"
+            BorderThickness="1">
+        <Grid x:Name="TextGroup">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <StackPanel x:Name="CaptionList" Grid.Row="0"/>
+            <TextBlock x:Name="StatusText"
+                       Grid.Row="1"
+                       Margin="0,3,0,0"
+                       FontFamily="Microsoft YaHei UI"
+                       FontSize="8.5"
+                       Foreground="#E6FFFFFF">
+                <TextBlock.Effect>
+                    <DropShadowEffect Color="#E6000000" BlurRadius="4" ShadowDepth="0" Opacity="0.9" RenderingBias="Quality"/>
+                </TextBlock.Effect>
+            </TextBlock>
+        </Grid>
+    </Border>
+</Window>

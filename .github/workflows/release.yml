@@ -1,0 +1,100 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version (for example 1.0.0)"
+        required: true
+        default: "1.0.0"
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Resolve version
+        shell: pwsh
+        run: |
+          $version = "${{ github.event.inputs.version }}"
+          if ([string]::IsNullOrWhiteSpace($version)) {
+            $version = "${{ github.ref_name }}"
+          }
+          $version = $version.Trim().TrimStart('v')
+          if ($version -notmatch '^\d+\.\d+\.\d+$') {
+            throw "Version must look like 1.0.0 (got '$version')."
+          }
+          $parts = @($version.Split('.'))
+          while ($parts.Count -lt 4) { $parts += '0' }
+          $fileVersion = ($parts[0..3] -join '.')
+          "VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          "FILE_VERSION=$fileVersion" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+
+      - name: Caption tracker tests
+        run: dotnet run --project scripts/caption-tracker-tests/CaptionTrackerTests.csproj -c Release
+
+      - name: Publish portable build
+        shell: pwsh
+        run: |
+          dotnet publish src/LiveSub/LiveSub.csproj -c Release -r win-x64 --self-contained true `
+            -p:PublishSingleFile=false -p:PublishTrimmed=false `
+            -p:Version=$env:VERSION -p:AssemblyVersion=$env:FILE_VERSION -p:FileVersion=$env:FILE_VERSION `
+            -o publish
+          if (-not (Test-Path "publish/LiveSub.exe")) { throw "LiveSub.exe missing from publish output." }
+          if (-not (Test-Path "publish/llama.dll") -or -not (Test-Path "publish/ggml.dll")) {
+            throw "LLama native DLLs missing from publish output."
+          }
+
+      - name: Package portable ZIP
+        shell: pwsh
+        run: |
+          $stage = "stage/LiveSub-$env:VERSION"
+          New-Item -ItemType Directory -Force -Path $stage | Out-Null
+          Copy-Item "publish/*" $stage -Recurse
+          Copy-Item "README.md" $stage
+          Compress-Archive -Path $stage -DestinationPath "LiveSub-$env:VERSION-win-x64.zip" -CompressionLevel Optimal
+
+      - name: Install Inno Setup
+        shell: pwsh
+        run: choco install innosetup --no-progress -y
+
+      - name: Build installer
+        shell: pwsh
+        run: |
+          $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          if (-not (Test-Path $iscc)) { throw "ISCC.exe not found at $iscc" }
+          & $iscc "/DMyAppVersion=$env:VERSION" "installer\LiveSub.iss"
+          if ($LASTEXITCODE -ne 0) { throw "Inno Setup failed with exit code $LASTEXITCODE" }
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ env.VERSION }}
+          name: LiveSub v${{ env.VERSION }}
+          body: |
+            ## LiveSub v${{ env.VERSION }}
+
+            Windows 本地系统音频字幕：Windows Live Captions / Whisper + 本地 Qwen 翻译。
+
+            - `LiveSub-${{ env.VERSION }}-win-x64.zip`：便携版，解压运行。
+            - `LiveSub-${{ env.VERSION }}-setup.exe`：按用户安装（无需管理员），包含开始菜单和卸载。
+
+            模型不随包分发，首次运行会在应用中下载到 `%LOCALAPPDATA%\LiveSub\models`。
+            Windows 实时字幕需要 Windows 11 22H2+ 并安装对应语言包；Whisper 日/韩需要多语言模型。
+          files: |
+            LiveSub-${{ env.VERSION }}-win-x64.zip
+            dist/LiveSub-${{ env.VERSION }}-setup.exe
+          generate_release_notes: true
+          make_latest: true

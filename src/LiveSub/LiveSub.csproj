@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <PlatformTarget>x64</PlatformTarget>
+    <AssemblyName>LiveSub</AssemblyName>
+    <RootNamespace>LiveSub</RootNamespace>
+    <ApplicationIcon>Assets\livesub.ico</ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <Version>1.0.0</Version>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <Authors>Jwforever</Authors>
+    <Product>LiveSub</Product>
+    <Description>Local system-audio subtitles for Windows</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <Resource Include="Assets\livesub.png" />
+    <Resource Include="Assets\livesub.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="LLamaSharp" Version="0.30.0" />
+    <PackageReference Include="LLamaSharp.Backend.Cpu" Version="0.30.0" />
+    <PackageReference Include="NAudio" Version="2.2.1" />
+    <PackageReference Include="Whisper.net" Version="1.8.1" />
+    <PackageReference Include="Whisper.net.Runtime" Version="1.8.1" />
+  </ItemGroup>
+  <Target Name="CopyLlamaCpuNative" AfterTargets="Build;Publish">
+    <ItemGroup>
+      <LlamaCpuNative Include="$(TargetDir)runtimes\win-x64\native\avx2\*.dll" />
+      <LlamaCpuNativePublish Include="$(PublishDir)runtimes\win-x64\native\avx2\*.dll" Condition="'$(PublishDir)' != ''" />
+    </ItemGroup>
+    <Copy SourceFiles="@(LlamaCpuNative)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(LlamaCpuNativePublish)" DestinationFolder="$(PublishDir)"
+          Condition="'@(LlamaCpuNativePublish)' != ''" SkipUnchangedFiles="true" />
+  </Target>
+</Project>

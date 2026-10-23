@@ -1,0 +1,50 @@
+# Build outputs
+**/bin/
+**/obj/
+/publish/
+/stage/
+/dist/
+/installer/Output/
+
+# Runtime models (downloaded by the app, too large for the repo)
+/models/
+
+# Generated test artifacts
+/scripts/overlay-tests/artifacts/
+/scripts/overlay-tests/packages/
+/scripts/overlay-tests/product-source/
+/scripts/overlay-tests/temp/
+/scripts/overlay-tests/*.txt
+/scripts/live-validation-bin/
+/scripts/translation-bench/
+/scripts/overlay-tests/.nuget-http/
+/scripts/overlay-tests/.cli/
+/scripts/overlay-tests/.nuget-scratch/
+/scripts/caption-window-probe.ps1
+/scripts/capture-overlay.ps1
+/scripts/download-qwen-parallel.py
+/scripts/inspect-model-window.ps1
+/scripts/latency-sentence-*.wav
+/scripts/list-windows.ps1
+/scripts/play-to-device.ps1
+/scripts/show-livesub*.ps1
+/scripts/verify-live-ui.ps1
+
+# Local screenshots, audio, timing probes and release artifacts
+/*.png
+/*.wav
+/*.txt
+/*.zip
+/screen*.png
+/dotnet-install.ps1
+/probe-*.ps1
+/test-latency.ps1
+
+# Keep documentation images
+!/docs/*.png
+
+# IDE and local tooling
+.vs/
+.idea/
+*.user
+.dotnet/
