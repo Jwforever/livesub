@@ -16,6 +16,8 @@ permissions:
 
 jobs:
   release:
+    # Keep releases on the stable branch (or an explicit v* tag), never on dev.
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -89,7 +91,7 @@ jobs:
             Windows 本地系统音频字幕：Windows Live Captions / Whisper + 本地 Qwen 翻译。
 
             - `LiveSub-${{ env.VERSION }}-win-x64.zip`：便携版，解压运行。
-            - `LiveSub-${{ env.VERSION }}-setup.exe`：按用户安装（无需管理员），包含开始菜单和卸载。
+            - `LiveSub-${{ env.VERSION }}-setup.exe`：中文安装向导，按用户安装（无需管理员），包含开始菜单和卸载。
 
             模型不随包分发，首次运行会在应用中下载到 `%LOCALAPPDATA%\LiveSub\models`。
             Windows 实时字幕需要 Windows 11 22H2+ 并安装对应语言包；Whisper 日/韩需要多语言模型。

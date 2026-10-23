@@ -20,7 +20,7 @@ Windows 本地系统音频字幕：捕获浏览器或任意应用的声音，用
 从 [Releases](https://github.com/Jwforever/livesub/releases) 下载：
 
 - `LiveSub-<version>-win-x64.zip`：便携版。解压后运行 `LiveSub.exe`，不需要安装，也不需要管理员权限。
-- `LiveSub-<version>-setup.exe`：按用户安装（默认 `%LOCALAPPDATA%\Programs\LiveSub`），创建开始菜单快捷方式，可从“应用和功能”卸载。
+- `LiveSub-<version>-setup.exe`：中文安装向导，按用户安装（默认 `%LOCALAPPDATA%\Programs\LiveSub`），创建开始菜单快捷方式，可从“应用和功能”卸载。
 
 模型不随安装包分发。首次使用时在应用内下载，默认保存到 `%LOCALAPPDATA%\LiveSub\models`，大约需要 2 GB 磁盘空间。安装包未做代码签名，Windows SmartScreen 可能提示“未知发布者”；便携版同样可用。
 
@@ -70,12 +70,17 @@ dotnet run --project scripts/caption-tracker-tests/CaptionTrackerTests.csproj
 powershell -ExecutionPolicy Bypass -File scripts/overlay-tests/run-tests.ps1
 ```
 
-## 发布
+## 分支与发布
 
-GitHub Actions 支持两种触发方式：
+- `main`：只保留可发布代码，默认分支。
+- `dev`：日常开发分支；先在 `dev` 提交并跑 CI，准备发布时再合并到 `main`。
+- Release 只在 `main` 或 `v*` 标签上运行；从 `dev` 手动触发会被跳过。
 
-- 在 Actions → Release 中手动运行，输入版本（从 `1.0.0` 开始）。
-- 推送 `v1.0.0` 形式的标签。
+发布步骤：
+
+1. 在 `dev` 完成开发和测试，推送后等 CI 通过。
+2. 合并 `dev` → `main`，再次确认 `main` 的 CI 通过。
+3. Actions → Release → Run workflow，输入新版本（例如 `1.0.1`）；或推送 `v1.0.1` 标签。
 
 工作流会运行文本回归、生成自包含便携 ZIP、生成按用户安装包，并创建对应的 GitHub Release。版本号从 **1.0.0** 开始。
 
