@@ -10,9 +10,9 @@
     <RootNamespace>LiveSub</RootNamespace>
     <ApplicationIcon>Assets\livesub.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
-    <Version>1.0.0</Version>
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <FileVersion>1.0.0.0</FileVersion>
+    <Version>1.0.2</Version>
+    <AssemblyVersion>1.0.2.0</AssemblyVersion>
+    <FileVersion>1.0.2.0</FileVersion>
     <Authors>Jwforever</Authors>
     <Product>LiveSub</Product>
     <Description>Local system-audio subtitles for Windows</Description>
