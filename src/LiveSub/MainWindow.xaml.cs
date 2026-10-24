@@ -729,6 +729,7 @@ public partial class MainWindow : Window
         Dispatcher.BeginInvoke(() =>
         {
             StatusText.Text = status;
+            UpdateSystemCaptionsButton();
             _overlay.SetCaption(english, chinese, status);
 
             if (string.IsNullOrWhiteSpace(english)) return;
