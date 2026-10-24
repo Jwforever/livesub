@@ -24,6 +24,22 @@ Windows 本地系统音频字幕：捕获浏览器或任意应用的声音，用
 
 模型不随安装包分发。首次使用时在应用内下载，默认保存到 `%LOCALAPPDATA%\LiveSub\models`，大约需要 2 GB 磁盘空间。安装包未做代码签名，Windows SmartScreen 可能提示“未知发布者”；便携版同样可用。
 
+## Windows SmartScreen / 安装提示
+
+Release 产物没有代码签名。首次运行 setup 或解压后的 exe 时，Windows 可能提示“Windows 已保护你的电脑 / 未知发布者”。原因是文件来自 Internet 且没有签名，并不代表检测到病毒。
+
+- 弹窗中选择“更多信息”→“仍要运行”。
+- 或先解除文件锁定：
+
+```powershell
+Unblock-File .\LiveSub-<version>-setup.exe
+Unblock-File .\LiveSub-<version>-win-x64.zip
+# 已解压的便携版
+Get-ChildItem .\LiveSub-<version> -Recurse | Unblock-File
+```
+
+彻底消除提示需要代码签名证书，并在构建时对 exe 和安装包签名。仅升级版本不会自动消除 SmartScreen 提示。
+
 ## 使用
 
 1. 启动 LiveSub。
