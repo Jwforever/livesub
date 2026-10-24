@@ -34,6 +34,7 @@ public sealed class WindowsCaptionsService : IDisposable
     private string? _originalPositionId;
     private bool _originallyMinimized;
     private bool _hidden;
+    private bool _floatingSelected;
 
     public static bool IsSupported => OperatingSystem.IsWindowsVersionAtLeast(10, 0, 22621);
     public bool IsWindowShownForUser => _captionsHwnd != IntPtr.Zero && IsWindow(_captionsHwnd) && !_hidden;
@@ -250,7 +251,19 @@ public sealed class WindowsCaptionsService : IDisposable
         try
         {
             ShowWindow(_captionsHwnd, 9);
-            SelectPosition(FloatingPositionId, rememberOriginal: true);
+            if (!_floatingSelected)
+            {
+                try
+                {
+                    SelectPosition(FloatingPositionId, rememberOriginal: true);
+                    _floatingSelected = true;
+                }
+                catch (Exception ex)
+                {
+                    // Hide anyway: leaving the native bar visible is worse than a failed docking switch.
+                    AppPaths.Log("Switch Live Captions to floating failed; hiding current window: " + ex.Message);
+                }
+            }
             var style = GetWindowLongPtr(_captionsHwnd, GwlExStyle).ToInt64();
             SetWindowLongPtr(_captionsHwnd, GwlExStyle,
                 new IntPtr((style | WsExLayered | WsExTransparent | WsExToolWindow) & ~WsExAppWindow));
@@ -341,6 +354,7 @@ public sealed class WindowsCaptionsService : IDisposable
         _captionsHwnd = IntPtr.Zero;
         _originalPositionId = null;
         _hidden = false;
+        _floatingSelected = false;
     }
 
     public void Dispose() => Stop();

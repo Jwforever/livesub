@@ -362,10 +362,18 @@ var tests = new List<(string Name, Action<Scenario> Run)>
     {
         const string text = "  First line\r\nSecond line  ";
         t.Step(0, text);
-        t.Step(180, text, "First line");
+        t.Step(180, text);
         t.Step(699, text);
-        t.Step(700, text, "Second line");
+        t.Step(700, text, "First line Second line");
         t.Step(1400, text);
+    }),
+    ("native_multiline_caption_is_not_split_at_line_wraps", t =>
+    {
+        const string text = "why work this hard\nwhy go this far?";
+        t.Step(0, text);
+        t.Step(179, text);
+        t.Step(180, text, "why work this hard why go this far?");
+        t.Step(880, text);
     }),
     ("whitespace_and_punctuation_only_do_not_emit_translation", t =>
     {

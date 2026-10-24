@@ -135,7 +135,7 @@ internal sealed class CaptionTextTracker
         for (var i = 0; i < text.Length; i++)
         {
             var ch = text[i];
-            if (ch is '!' or '?' or ';' or '。' or '！' or '？' or '\n') return i;
+            if (ch is '!' or '?' or ';' or '。' or '！' or '？') return i;
             if (ch != '.') continue;
             if (i + 1 < text.Length && !char.IsWhiteSpace(text[i + 1])) continue;
             var start = i;
@@ -148,5 +148,10 @@ internal sealed class CaptionTextTracker
         return -1;
     }
 
-    private static string Normalize(string text) => text.Replace("\r\n", "\n").Trim();
+    private static string Normalize(string text)
+    {
+        // Windows Live Captions wraps phrases with newlines; they are layout, not sentence ends.
+        var parts = text.Split(new[] { ' ', '\t', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+        return string.Join(' ', parts);
+    }
 }
