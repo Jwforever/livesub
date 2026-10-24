@@ -77,11 +77,11 @@ public sealed class WindowsCaptionsService : IDisposable
             }
             _textBlock = FindElement("CaptionsTextBlock");
             _text.Reset(_textBlock?.Current.Name ?? "", Environment.TickCount64);
-            HideWindowForUser();
+            PrepareVisibleForRecognition();
             var token = _cts.Token;
             _loopTask = Task.Factory.StartNew(() => Loop(token), CancellationToken.None,
                 TaskCreationOptions.LongRunning, TaskScheduler.Default);
-            AppPaths.Log("Windows Live Captions attached; floating window kept transparent on screen.");
+            AppPaths.Log("Windows Live Captions attached; waiting for first caption before hiding.");
         }
         catch
         {
@@ -103,9 +103,25 @@ public sealed class WindowsCaptionsService : IDisposable
         throw new InvalidOperationException("找不到 Windows 实时字幕窗口，请先按 Win+Ctrl+L 完成语言包设置。");
     }
 
+    private void PrepareVisibleForRecognition()
+    {
+        ShowWindow(_captionsHwnd, 9);
+        if (_floatingSelected) return;
+        try
+        {
+            SelectPosition(FloatingPositionId, rememberOriginal: true);
+            _floatingSelected = true;
+        }
+        catch (Exception ex)
+        {
+            AppPaths.Log("Switch Live Captions to floating failed; leaving it visible: " + ex.Message);
+        }
+    }
+
     private void Loop(CancellationToken token)
     {
         var previousText = "";
+        var firstCaptionSeen = false;
         while (!token.IsCancellationRequested)
         {
             try
@@ -115,14 +131,29 @@ public sealed class WindowsCaptionsService : IDisposable
                     Error?.Invoke("Windows 实时字幕已关闭，请停止后重新开始翻译。");
                     break;
                 }
-                // A visible native window keeps Live Captions capturing audio reliably.
-                // It stays click-through at alpha 0; reapply in case Windows fades it in.
+                // A visible native window at startup initializes Live Captions' audio capture.
+                // Once it has produced text, hide it and keep it transparent.
                 if (_hidden)
                     SetLayeredWindowAttributes(_captionsHwnd, 0, 0, 2);
                 _textBlock ??= FindElement("CaptionsTextBlock");
                 if (_textBlock != null)
                 {
                     var snapshot = _textBlock.Current.Name;
+                    if (!firstCaptionSeen && !string.IsNullOrWhiteSpace(snapshot))
+                    {
+                        firstCaptionSeen = true;
+                        if (!_hidden)
+                        {
+                            try
+                            {
+                                HideWindowForUser();
+                            }
+                            catch (Exception ex)
+                            {
+                                AppPaths.Log("Auto-hide Live Captions failed: " + ex.Message);
+                            }
+                        }
+                    }
                     if (snapshot != previousText)
                     {
                         AppPaths.Log($"Caption snapshot ticks={Stopwatch.GetTimestamp()}: {snapshot}");
