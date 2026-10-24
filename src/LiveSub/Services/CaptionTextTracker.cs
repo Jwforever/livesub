@@ -3,7 +3,7 @@ namespace LiveSub.Services;
 internal sealed class CaptionTextTracker
 {
     private const int StableSentenceMilliseconds = 180;
-    private const int CommaStabilityMilliseconds = 700;
+    private const int CommaStabilityMilliseconds = 1500;
     private const int IdleMilliseconds = 700;
     private static readonly HashSet<string> Abbreviations = new(StringComparer.OrdinalIgnoreCase)
     {

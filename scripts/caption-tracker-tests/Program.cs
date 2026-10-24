@@ -149,7 +149,7 @@ var tests = new List<(string Name, Action<Scenario> Run)>
             (8662, "hello, this is a Test of Life subtitles. The meeting will start in five minutes. Please open the document and review the first section,"),
         };
         var index = 0;
-        for (long now = 0; now <= 10000; now += 40)
+        for (long now = 0; now <= 12000; now += 40)
         {
             while (index + 1 < snapshots.Length && snapshots[index + 1].At <= now) index++;
             t.Observe(now, snapshots[index].Text);
@@ -380,10 +380,10 @@ var tests = new List<(string Name, Action<Scenario> Run)>
     {
         const string text = "First part, second part.";
         t.Step(0, text);
-        t.Step(699, text);
-        t.Step(700, text, "First part,");
-        t.Step(1200, text);
-        t.Step(1400, text, "second part.");
+        t.Step(1499, text);
+        t.Step(1500, text, "First part,");
+        t.Step(1680, text);
+        t.Step(1860, text, "second part.");
     }),
     ("comma_without_space_stays_in_the_sentence", t =>
     {
@@ -403,10 +403,10 @@ var tests = new List<(string Name, Action<Scenario> Run)>
     {
         const string text = "By, nearly every conceivable standard, more people feel alone.";
         t.Step(0, text);
-        t.Step(699, text);
-        t.Step(700, text, "By, nearly every conceivable standard,");
-        t.Step(1200, text);
-        t.Step(1400, text, "more people feel alone.");
+        t.Step(1499, text);
+        t.Step(1500, text, "By, nearly every conceivable standard,");
+        t.Step(1680, text);
+        t.Step(1860, text, "more people feel alone.");
     }),
     ("question_mark_followed_by_space_splits", t =>
     {
