@@ -139,7 +139,9 @@ internal sealed class CaptionTextTracker
             if (ch is '，' or '、') return i;
             if (ch == ',')
             {
-                if (i + 1 >= text.Length || char.IsWhiteSpace(text[i + 1])) return i;
+                if (i + 1 < text.Length && !char.IsWhiteSpace(text[i + 1])) continue;
+                // Do not turn an opener like "By," into a subtitle by itself.
+                if (CountWords(text, i) >= 2) return i;
                 continue;
             }
             if (ch is '!' or '?') return i;
@@ -153,6 +155,25 @@ internal sealed class CaptionTextTracker
             return i;
         }
         return -1;
+    }
+
+    private static int CountWords(string text, int end)
+    {
+        var count = 0;
+        var inWord = false;
+        for (var i = 0; i < end; i++)
+        {
+            if (char.IsWhiteSpace(text[i]))
+            {
+                inWord = false;
+            }
+            else if (!inWord)
+            {
+                count++;
+                inWord = true;
+            }
+        }
+        return count;
     }
 
     private static string Normalize(string text)

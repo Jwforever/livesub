@@ -391,6 +391,15 @@ var tests = new List<(string Name, Action<Scenario> Run)>
         t.Step(179, text);
         t.Step(180, text, "The value is 1,000 items.");
     }),
+    ("comma_after_a_single_word_is_not_a_boundary", t =>
+    {
+        const string text = "By, nearly every conceivable standard, more people feel alone.";
+        t.Step(0, text);
+        t.Step(179, text);
+        t.Step(180, text, "By, nearly every conceivable standard,");
+        t.Step(360, text);
+        t.Step(540, text, "more people feel alone.");
+    }),
     ("question_mark_followed_by_space_splits", t =>
     {
         const string text = "Really? Yes.";

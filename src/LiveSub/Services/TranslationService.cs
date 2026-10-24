@@ -91,6 +91,9 @@ public sealed class TranslationService : IDisposable
                 translated = Clean(output.ToString());
             }
 
+            if (!HasChinese(translated) && text.Any(char.IsLetter))
+                translated = "（未翻译）";
+
             AppPaths.Log($"MT: {translated}");
             return translated;
         }
@@ -111,13 +114,9 @@ public sealed class TranslationService : IDisposable
             "<|im_start|>assistant\n";
     }
 
-    private string BuildRetryPrompt(string text)
-    {
-        var source = SourceLanguages.Get(SourceLanguage);
-        return "<|im_start|>system\n你只输出简体中文译文，不要复述原文。\n<|im_end|>\n" +
-            $"<|im_start|>user\n请把下面的{source.DisplayName}内容翻译成简体中文：\n" +
-            text.Trim() + "\n<|im_end|>\n<|im_start|>assistant\n";
-    }
+    private string BuildRetryPrompt(string text) =>
+        "<|im_start|>system\nYou are a subtitle translator. Translate the input into Simplified Chinese and output Chinese only.\n<|im_end|>\n" +
+        "<|im_start|>user\n" + text.Trim() + "\n<|im_end|>\n<|im_start|>assistant\n";
 
     private static bool HasChinese(string value) =>
         value.Any(ch => ch >= '\u4e00' && ch <= '\u9fff');
