@@ -70,10 +70,27 @@ public sealed class TranslationService : IDisposable
                 if (partial == null || clock.ElapsedMilliseconds - lastShown < 50) continue;
                 lastShown = clock.ElapsedMilliseconds;
                 var preview = Clean(output.ToString());
-                if (preview.Length > 0) partial(preview);
+                if (HasChinese(preview)) partial(preview);
             }
 
             var translated = Clean(output.ToString());
+            if (!HasChinese(translated) && text.Any(char.IsLetter))
+            {
+                // Small models sometimes echo an incomplete fragment instead of translating it.
+                AppPaths.Log($"MT retry (no Chinese): {translated}");
+                output.Clear();
+                var retryPrompt = BuildRetryPrompt(text);
+                await foreach (var token in _executor.InferAsync(retryPrompt, inference, ct))
+                {
+                    output.Append(token);
+                    if (partial == null || clock.ElapsedMilliseconds - lastShown < 50) continue;
+                    lastShown = clock.ElapsedMilliseconds;
+                    var preview = Clean(output.ToString());
+                    if (HasChinese(preview)) partial(preview);
+                }
+                translated = Clean(output.ToString());
+            }
+
             AppPaths.Log($"MT: {translated}");
             return translated;
         }
@@ -93,6 +110,17 @@ public sealed class TranslationService : IDisposable
             "<|im_start|>user\n" + text.Trim() + "\n<|im_end|>\n" +
             "<|im_start|>assistant\n";
     }
+
+    private string BuildRetryPrompt(string text)
+    {
+        var source = SourceLanguages.Get(SourceLanguage);
+        return "<|im_start|>system\n你只输出简体中文译文，不要复述原文。\n<|im_end|>\n" +
+            $"<|im_start|>user\n请把下面的{source.DisplayName}内容翻译成简体中文：\n" +
+            text.Trim() + "\n<|im_end|>\n<|im_start|>assistant\n";
+    }
+
+    private static bool HasChinese(string value) =>
+        value.Any(ch => ch >= '\u4e00' && ch <= '\u9fff');
 
     private static string Clean(string value)
     {

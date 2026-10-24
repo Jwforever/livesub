@@ -135,7 +135,14 @@ internal sealed class CaptionTextTracker
         for (var i = 0; i < text.Length; i++)
         {
             var ch = text[i];
-            if (ch is '!' or '?' or ';' or '。' or '！' or '？') return i;
+            if (ch is ';' or '。' or '！' or '？' or '；') return i;
+            if (ch is '，' or '、') return i;
+            if (ch == ',')
+            {
+                if (i + 1 >= text.Length || char.IsWhiteSpace(text[i + 1])) return i;
+                continue;
+            }
+            if (ch is '!' or '?') return i;
             if (ch != '.') continue;
             if (i + 1 < text.Length && !char.IsWhiteSpace(text[i + 1])) continue;
             var start = i;

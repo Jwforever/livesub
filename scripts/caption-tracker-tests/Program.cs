@@ -375,6 +375,31 @@ var tests = new List<(string Name, Action<Scenario> Run)>
         t.Step(180, text, "why work this hard why go this far?");
         t.Step(880, text);
     }),
+    ("comma_followed_by_space_is_a_sentence_boundary", t =>
+    {
+        const string text = "First part, second part.";
+        t.Step(0, text);
+        t.Step(179, text);
+        t.Step(180, text, "First part,");
+        t.Step(360, text);
+        t.Step(540, text, "second part.");
+    }),
+    ("comma_without_space_stays_in_the_sentence", t =>
+    {
+        const string text = "The value is 1,000 items.";
+        t.Step(0, text);
+        t.Step(179, text);
+        t.Step(180, text, "The value is 1,000 items.");
+    }),
+    ("question_mark_followed_by_space_splits", t =>
+    {
+        const string text = "Really? Yes.";
+        t.Step(0, text);
+        t.Step(179, text);
+        t.Step(180, text, "Really?");
+        t.Step(360, text);
+        t.Step(540, text, "Yes.");
+    }),
     ("whitespace_and_punctuation_only_do_not_emit_translation", t =>
     {
         t.Step(0, " \r\n ");
