@@ -91,6 +91,7 @@ public sealed class TranslationService : IDisposable
                 translated = Clean(output.ToString());
             }
 
+            translated = StripEchoedSource(translated, text);
             if (!HasChinese(translated) && text.Any(char.IsLetter))
                 translated = "（未翻译）";
 
@@ -120,6 +121,17 @@ public sealed class TranslationService : IDisposable
 
     private static bool HasChinese(string value) =>
         value.Any(ch => ch >= '\u4e00' && ch <= '\u9fff');
+
+    private static string StripEchoedSource(string translated, string source)
+    {
+        var original = source.Trim();
+        if (original.Length == 0 ||
+            !translated.StartsWith(original, StringComparison.OrdinalIgnoreCase))
+            return translated;
+
+        var rest = translated[original.Length..].TrimStart(' ', ',', '，', ':', '：', '-', '—');
+        return rest.Length > 0 ? rest : translated;
+    }
 
     private static string Clean(string value)
     {

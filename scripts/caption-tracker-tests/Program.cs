@@ -233,6 +233,7 @@ var tests = new List<(string Name, Action<Scenario> Run)>
         t.Observe(880, text);
         t.Observe(1060, text);
         t.Observe(1240, text);
+        t.Observe(1420, text);
         t.ExpectAll("First sentence.", "Second sentence!", "Third sentence?");
     }),
     ("complete_sentence_followed_by_idle_unpunctuated_tail", t =>
@@ -379,10 +380,10 @@ var tests = new List<(string Name, Action<Scenario> Run)>
     {
         const string text = "First part, second part.";
         t.Step(0, text);
-        t.Step(179, text);
-        t.Step(180, text, "First part,");
-        t.Step(360, text);
-        t.Step(540, text, "second part.");
+        t.Step(699, text);
+        t.Step(700, text, "First part,");
+        t.Step(1200, text);
+        t.Step(1400, text, "second part.");
     }),
     ("comma_without_space_stays_in_the_sentence", t =>
     {
@@ -391,14 +392,21 @@ var tests = new List<(string Name, Action<Scenario> Run)>
         t.Step(179, text);
         t.Step(180, text, "The value is 1,000 items.");
     }),
+    ("provisional_comma_removed_before_stability_is_not_committed", t =>
+    {
+        t.Step(0, "but instead of,");
+        t.Step(300, "but instead of");
+        t.Step(900, "but instead of feeling fulfilled.");
+        t.Step(1080, "but instead of feeling fulfilled.", "but instead of feeling fulfilled.");
+    }),
     ("comma_after_a_single_word_is_not_a_boundary", t =>
     {
         const string text = "By, nearly every conceivable standard, more people feel alone.";
         t.Step(0, text);
-        t.Step(179, text);
-        t.Step(180, text, "By, nearly every conceivable standard,");
-        t.Step(360, text);
-        t.Step(540, text, "more people feel alone.");
+        t.Step(699, text);
+        t.Step(700, text, "By, nearly every conceivable standard,");
+        t.Step(1200, text);
+        t.Step(1400, text, "more people feel alone.");
     }),
     ("question_mark_followed_by_space_splits", t =>
     {

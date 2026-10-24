@@ -3,6 +3,7 @@ namespace LiveSub.Services;
 internal sealed class CaptionTextTracker
 {
     private const int StableSentenceMilliseconds = 180;
+    private const int CommaStabilityMilliseconds = 700;
     private const int IdleMilliseconds = 700;
     private static readonly HashSet<string> Abbreviations = new(StringComparer.OrdinalIgnoreCase)
     {
@@ -43,14 +44,17 @@ internal sealed class CaptionTextTracker
             _candidateSince = now;
         }
 
-        if (candidate.Length > 0 && now - _candidateSince >= StableSentenceMilliseconds)
+        var requiredStability = candidate.Length > 0 && candidate[^1] is ',' or '，' or '、'
+            ? CommaStabilityMilliseconds
+            : StableSentenceMilliseconds;
+        if (candidate.Length > 0 && now - _candidateSince >= requiredStability)
         {
             Commit(candidate.Length, results);
             _candidate = "";
         }
-        else if (pending.Length > 0 && now - _lastChange >= IdleMilliseconds)
+        else if (candidate.Length == 0 && pending.Length > 0 && now - _lastChange >= IdleMilliseconds)
         {
-            Commit(end >= 0 ? end + 1 : Math.Min(pending.Length, 240), results);
+            Commit(Math.Min(pending.Length, 240), results);
             _candidate = "";
         }
         else if (pending.Length > 240 && candidate.Length == 0)
